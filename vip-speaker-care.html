@@ -363,100 +363,84 @@
 </div>
 
 <div class="bar">
-  <a class="btn btn-primary" id="submitBtn" href="mailto:vlad@davidhernandezministries.com?subject=submited%20form" role="button">Submit</a>
+  <a class="btn btn-primary" id="submitBtn" href="mailto:vlad@davidhernandezministries.com?subject=submited%20form" target="_top" role="button">Submit</a>
 </div>
 
 </div>
 
 <script>
-  var RECIPIENT = 'vlad@davidhernandezministries.com';
-  var form = document.getElementById('careForm');
-  var submitBtn = document.getElementById('submitBtn');
+  const RECIPIENT = 'vlad@davidhernandezministries.com';
+  const SUBJECT = 'submited form';
 
-  function updatePrayerVisibility(){
-    var checked = document.querySelector('input[name="beforeUp"]:checked');
-    var field = document.getElementById('prayerField');
+  const form = document.getElementById('careForm');
+  const submitBtn = document.getElementById('submitBtn');
 
-    if(checked && checked.value === "Green room until it's time"){
+  function updatePrayerVisibility() {
+    const checked = document.querySelector('input[name="beforeUp"]:checked');
+    const field = document.getElementById('prayerField');
+
+    if (checked && checked.value === "Green room until it's time") {
       field.hidden = false;
     } else {
       field.hidden = true;
-      document.querySelectorAll('input[name="prayer"]').forEach(function(r){
-        r.checked = false;
-      });
+      document.querySelectorAll('input[name="prayer"]').forEach(r => r.checked = false);
     }
 
-    updateMailLink();
+    updateMailto();
   }
 
-  document.querySelectorAll('input[name="beforeUp"]').forEach(function(r){
+  document.querySelectorAll('input[name="beforeUp"]').forEach(r => {
     r.addEventListener('change', updatePrayerVisibility);
   });
 
-  function val(name){
-    var field = form.elements[name];
-    if(!field) return 'Not provided';
+  function getValue(name) {
+    const el = form.elements[name];
+    if (!el) return 'Not provided';
 
-    var value = field.value || '';
-    value = String(value).trim();
+    const value = String(el.value || '').trim();
     return value || 'Not provided';
   }
 
-  function buildBody(){
-    return (
-      "Speaker: " + val('speaker') + "
-
-" +
-      "Where until introduced: " + val('beforeUp') + "
-" +
-      "Prayer before going up: " + val('prayer') + "
-" +
-      "Mic handoff: " + val('mic') + "
-" +
-      "On the pulpit: " + val('pulpitItems') + "
-" +
-      "Printed sermon outline: " + val('printedOutline') + "
-" +
-      "Worship team stays on stage: " + val('worshipStay') + "
-" +
-      "Piano player stays on stage: " + val('pianoStay') + "
-" +
-      "When worship returns: " + val('worshipReturn') + "
-" +
-      "Ministry / altar notes: " + val('ministryTime') + "
-" +
-      "Green room on arrival: " + val('greenroom') + "
-" +
-      "Starbucks order: " + val('starbucks') + "
-" +
-      "Allergies / dietary: " + val('allergies') + "
-" +
-      "Traveling with them: " + val('guests') + "
-" +
-      "Additional notes: " + val('other')
-    );
+  function makeBody() {
+    return [
+      'Speaker: ' + getValue('speaker'),
+      '',
+      'Where until introduced: ' + getValue('beforeUp'),
+      'Prayer before going up: ' + getValue('prayer'),
+      'Mic handoff: ' + getValue('mic'),
+      'On the pulpit: ' + getValue('pulpitItems'),
+      'Printed sermon outline: ' + getValue('printedOutline'),
+      'Worship team stays on stage: ' + getValue('worshipStay'),
+      'Piano player stays on stage: ' + getValue('pianoStay'),
+      'When worship returns: ' + getValue('worshipReturn'),
+      'Ministry / altar notes: ' + getValue('ministryTime'),
+      'Green room on arrival: ' + getValue('greenroom'),
+      'Starbucks order: ' + getValue('starbucks'),
+      'Allergies / dietary: ' + getValue('allergies'),
+      'Traveling with them: ' + getValue('guests'),
+      'Additional notes: ' + getValue('other')
+    ].join('
+');
   }
 
-  function updateMailLink(){
-    var subject = 'submited form';
-    var href =
+  function updateMailto() {
+    const mailto =
       'mailto:' + RECIPIENT +
-      '?subject=' + encodeURIComponent(subject) +
-      '&body=' + encodeURIComponent(buildBody());
+      '?subject=' + encodeURIComponent(SUBJECT) +
+      '&body=' + encodeURIComponent(makeBody());
 
-    submitBtn.setAttribute('href', href);
+    // The button itself is always a real native mailto link.
+    submitBtn.href = mailto;
   }
 
-  // Keep the real mailto link updated as the user fills out the form.
-  form.addEventListener('input', updateMailLink);
-  form.addEventListener('change', updateMailLink);
+  form.addEventListener('input', updateMailto);
+  form.addEventListener('change', updateMailto);
 
-  // Only stop the link if the required speaker is missing.
-  submitBtn.addEventListener('click', function(e){
-    var speaker = form.elements['speaker'];
-    var speakerError = document.getElementById('speakerError');
+  submitBtn.addEventListener('click', function(e) {
+    const speaker = form.elements['speaker'];
+    const speakerError = document.getElementById('speakerError');
 
-    if(!speaker.value){
+    if (!speaker.value) {
       e.preventDefault();
       speaker.classList.add('invalid');
       speakerError.hidden = false;
@@ -466,19 +450,20 @@
 
     speaker.classList.remove('invalid');
     speakerError.hidden = true;
+    updateMailto();
 
-    // Refresh immediately before the browser follows the native mailto link.
-    updateMailLink();
+    // IMPORTANT: no preventDefault here.
+    // The browser follows the real <a href="mailto:..."> using target="_top".
   });
 
-  form.elements['speaker'].addEventListener('change', function(){
-    if(this.value){
+  form.elements['speaker'].addEventListener('change', function() {
+    if (this.value) {
       this.classList.remove('invalid');
       document.getElementById('speakerError').hidden = true;
     }
   });
 
-  updateMailLink();
+  updateMailto();
 </script>
 
 </body>

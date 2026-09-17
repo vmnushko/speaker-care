@@ -363,20 +363,21 @@
 </div>
 
 <div class="bar">
-  <a class="btn btn-primary" id="submitBtn" href="mailto:vlad@davidhernandezministries.com?subject=Submitted%20Form" target="_top" role="button">Submit</a>
+  <a class="btn btn-primary" id="submitBtn" href="mailto:vlad@davidhernandezministries.com?subject=Submitted%20Form" role="button">Submit</a>
 </div>
 
 </div>
 
 <script>
-  var RECIPIENT = 'vlad@davidhernandezministries.com';
-  var SUBJECT = 'Submitted Form';
-  var form = document.getElementById('careForm');
-  var submitBtn = document.getElementById('submitBtn');
+  const RECIPIENT = 'vlad@davidhernandezministries.com';
+  const SUBJECT = 'Submitted Form';
+
+  const form = document.getElementById('careForm');
+  const submitBtn = document.getElementById('submitBtn');
 
   function updatePrayerVisibility() {
-    var checked = document.querySelector('input[name="beforeUp"]:checked');
-    var field = document.getElementById('prayerField');
+    const checked = document.querySelector('input[name="beforeUp"]:checked');
+    const field = document.getElementById('prayerField');
 
     if (checked && checked.value === "Green room until it's time") {
       field.hidden = false;
@@ -386,26 +387,26 @@
         r.checked = false;
       });
     }
-    updateMailto();
+
+    buildEmailLink();
   }
 
-  document.querySelectorAll('input[name="beforeUp"]').forEach(function(r) {
-    r.addEventListener('change', updatePrayerVisibility);
-  });
-
   function getValue(name) {
-    var checked = form.querySelector('[name="' + name + '"]:checked');
-    if (checked) return checked.value;
+    const radios = form.querySelectorAll('input[type="radio"][name="' + name + '"]');
+    if (radios.length) {
+      const checked = form.querySelector('input[type="radio"][name="' + name + '"]:checked');
+      return checked ? checked.value : 'Not provided';
+    }
 
-    var field = form.elements[name];
+    const field = form.elements[name];
     if (!field) return 'Not provided';
 
-    var value = String(field.value || '').trim();
+    const value = String(field.value || '').trim();
     return value || 'Not provided';
   }
 
-  function makeBody() {
-    var lines = [
+  function buildEmailLink() {
+    const body = [
       'Speaker: ' + getValue('speaker'),
       '',
       'Where until introduced: ' + getValue('beforeUp'),
@@ -422,48 +423,28 @@
       'Allergies / dietary: ' + getValue('allergies'),
       'Traveling with them: ' + getValue('guests'),
       'Additional notes: ' + getValue('other')
-    ];
+    ].join('
+');
 
-    return lines.join('\r\n');
+    submitBtn.href =
+      'mailto:' + RECIPIENT +
+      '?subject=' + encodeURIComponent(SUBJECT) +
+      '&body=' + encodeURIComponent(body);
   }
 
-  function updateMailto() {
-    var mailto = 'mailto:' + RECIPIENT
-      + '?subject=' + encodeURIComponent(SUBJECT)
-      + '&body=' + encodeURIComponent(makeBody());
-
-    submitBtn.setAttribute('href', mailto);
-  }
-
-  form.addEventListener('input', updateMailto);
-  form.addEventListener('change', updateMailto);
-
-  submitBtn.addEventListener('click', function(e) {
-    var speaker = form.elements['speaker'];
-    var speakerError = document.getElementById('speakerError');
-
-    if (!speaker.value) {
-      e.preventDefault();
-      speaker.classList.add('invalid');
-      speakerError.hidden = false;
-      speaker.focus();
-      return;
-    }
-
-    speaker.classList.remove('invalid');
-    speakerError.hidden = true;
-    updateMailto();
-    // Do not prevent default. The real mailto link opens the email app.
+  document.querySelectorAll('input[name="beforeUp"]').forEach(function(r) {
+    r.addEventListener('change', updatePrayerVisibility);
   });
 
-  form.elements['speaker'].addEventListener('change', function() {
-    if (this.value) {
-      this.classList.remove('invalid');
-      document.getElementById('speakerError').hidden = true;
-    }
-  });
+  // Keep the mailto URL fully built BEFORE the user taps Submit.
+  form.addEventListener('input', buildEmailLink);
+  form.addEventListener('change', buildEmailLink);
 
-  updateMailto();
+  // Extra mobile events so Safari/iOS always has the latest values before the tap.
+  form.addEventListener('keyup', buildEmailLink);
+  form.addEventListener('blur', buildEmailLink, true);
+
+  buildEmailLink();
 </script>
 
 </body>

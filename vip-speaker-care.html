@@ -362,134 +362,216 @@
   <p class="foot">Your details go directly to our hosting team &mdash; nothing is shared beyond planning your visit.</p>
 </div>
 
-<div class="bar">
+<div class="bar" style="flex-direction:column;gap:8px;">
   <a class="btn btn-primary" id="submitBtn"
      href="mailto:vlad@davidhernandezministries.com?subject=Submitted%20Form"
      role="button">Submit</a>
+  <a class="fallback" id="browserBtn" href="#" target="_blank" rel="noopener noreferrer">Open in Browser</a>
+  <a class="fallback" id="fallbackBtn" href="#" hidden>Open email another way</a>
 </div>
 
 </div>
 
 <script>
-  const RECIPIENT = 'vlad@davidhernandezministries.com';
-  const SUBJECT = 'Submitted Form';
+(function () {
+  'use strict';
 
-  const form = document.getElementById('careForm');
-  const submitBtn = document.getElementById('submitBtn');
-  const speakerError = document.getElementById('speakerError');
+  var RECIPIENT = 'vlad@davidhernandezministries.com';
+  var SUBJECT = 'Submitted Form';
 
-  function valueOf(name) {
-    const checked = form.querySelector('input[name="' + name + '"]:checked');
+  var form = document.getElementById('careForm');
+  var submitBtn = document.getElementById('submitBtn');
+  var browserBtn = document.getElementById('browserBtn');
+  var fallbackBtn = document.getElementById('fallbackBtn');
+  var speakerError = document.getElementById('speakerError');
+
+  function getAnswer(name) {
+    var checked = form.querySelector('input[name="' + name + '"]:checked');
     if (checked) return checked.value;
 
-    const field = form.elements[name];
+    var field = form.elements[name];
     if (!field) return 'Not provided';
 
-    const value = String(field.value || '').trim();
+    var value = String(field.value || '').trim();
     return value || 'Not provided';
   }
 
-  function emailBody() {
-    return [
+  function buildBody() {
+    var lines = [
       'Holy Spirit Conference 26 - Guest Speaker Form',
       '',
       'Which speaker is this for?',
-      valueOf('speaker'),
+      getAnswer('speaker'),
       '',
       "Before you're introduced on stage, where would you like to be?",
-      valueOf('beforeUp'),
+      getAnswer('beforeUp'),
       '',
       'Would you like a moment of prayer before you go up?',
-      valueOf('prayer'),
+      getAnswer('prayer'),
       '',
       'How would you like the mic as you come up on stage?',
-      valueOf('mic'),
+      getAnswer('mic'),
       '',
       'What would you like on the pulpit?',
-      valueOf('pulpitItems'),
+      getAnswer('pulpitItems'),
       '',
       "If you're not using an electronic device, would you like a sermon outline printed?",
-      valueOf('printedOutline'),
+      getAnswer('printedOutline'),
       '',
       "Would you like the worship team to remain on stage while you're preaching?",
-      valueOf('worshipStay'),
+      getAnswer('worshipStay'),
       '',
       "Would you like the piano player to remain on stage while you're preaching?",
-      valueOf('pianoStay'),
+      getAnswer('pianoStay'),
       '',
       'When would you like the worship team to come back up?',
-      valueOf('worshipReturn'),
+      getAnswer('worshipReturn'),
       '',
       'Anything else specific for ministry or altar call time?',
-      valueOf('ministryTime'),
+      getAnswer('ministryTime'),
       '',
       "Anything you'd like waiting in the green room upon your arrival",
-      valueOf('greenroom'),
+      getAnswer('greenroom'),
       '',
       'Starbucks order (drink + snack)',
-      valueOf('starbucks'),
+      getAnswer('starbucks'),
       '',
       'Allergies or dietary restrictions',
-      valueOf('allergies'),
+      getAnswer('allergies'),
       '',
       'Please list anyone traveling with you (names + how many seats are needed)',
-      valueOf('guests'),
+      getAnswer('guests'),
       '',
       'Anything at all that would help us take great care of you',
-      valueOf('other')
-    ].join('\r\n');
+      getAnswer('other')
+    ];
+
+    return lines.join('\r\n');
   }
 
-  function rebuildMailLink() {
-    submitBtn.href =
-      'mailto:' + RECIPIENT +
+  function makeMailto(body) {
+    return 'mailto:' + RECIPIENT +
       '?subject=' + encodeURIComponent(SUBJECT) +
-      '&body=' + encodeURIComponent(emailBody());
+      '&body=' + encodeURIComponent(body);
+  }
+
+  function makeGmail(body) {
+    return 'https://mail.google.com/mail/?view=cm&fs=1' +
+      '&to=' + encodeURIComponent(RECIPIENT) +
+      '&su=' + encodeURIComponent(SUBJECT) +
+      '&body=' + encodeURIComponent(body);
+  }
+
+  function isIOS() {
+    var ua = navigator.userAgent || '';
+    return /iPhone|iPad|iPod/i.test(ua) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  function isAndroid() {
+    return /Android/i.test(navigator.userAgent || '');
+  }
+
+  function isDesktopMacSafari() {
+    var ua = navigator.userAgent || '';
+    return /Macintosh/i.test(ua) &&
+      /Safari/i.test(ua) &&
+      !/Chrome|CriOS|Chromium|Edg|OPR|Firefox/i.test(ua) &&
+      !isIOS();
+  }
+
+  function refreshLinks() {
+    var body = buildBody();
+    var mailto = makeMailto(body);
+    var gmail = makeGmail(body);
+
+    // Always provide a browser-based Gmail compose option with the same answers.
+    browserBtn.href = gmail;
+
+    // iPhone/iPad/Android: native mail composer.
+    if (isIOS() || isAndroid()) {
+      submitBtn.href = mailto;
+      submitBtn.removeAttribute('target');
+      fallbackBtn.href = gmail;
+      fallbackBtn.textContent = 'Open in Gmail instead';
+    }
+    // Mac Safari: use Gmail in SAME TAB so popup blockers cannot kill it.
+    else if (isDesktopMacSafari()) {
+      submitBtn.href = gmail;
+      submitBtn.removeAttribute('target');
+      fallbackBtn.href = mailto;
+      fallbackBtn.textContent = 'Open default Mail app instead';
+    }
+    // Chrome/Edge/Firefox/other desktop: native mailto first.
+    else {
+      submitBtn.href = mailto;
+      submitBtn.removeAttribute('target');
+      fallbackBtn.href = gmail;
+      fallbackBtn.textContent = 'Open in Gmail instead';
+    }
+
+    // Keep a second route ready, but hidden unless needed manually.
+    fallbackBtn.hidden = true;
   }
 
   function updatePrayerVisibility() {
-    const checked = form.querySelector('input[name="beforeUp"]:checked');
-    const prayerField = document.getElementById('prayerField');
+    var checked = form.querySelector('input[name="beforeUp"]:checked');
+    var field = document.getElementById('prayerField');
 
     if (checked && checked.value === "Green room until it's time") {
-      prayerField.hidden = false;
+      field.hidden = false;
     } else {
-      prayerField.hidden = true;
-      form.querySelectorAll('input[name="prayer"]').forEach(function(r) {
+      field.hidden = true;
+      form.querySelectorAll('input[name="prayer"]').forEach(function (r) {
         r.checked = false;
       });
     }
 
-    rebuildMailLink();
+    refreshLinks();
   }
 
-  form.querySelectorAll('input[name="beforeUp"]').forEach(function(r) {
+  form.querySelectorAll('input[name="beforeUp"]').forEach(function (r) {
     r.addEventListener('change', updatePrayerVisibility);
   });
 
-  // Build the COMPLETE mailto before Submit is ever clicked.
-  form.addEventListener('input', rebuildMailLink);
-  form.addEventListener('change', rebuildMailLink);
-  form.addEventListener('keyup', rebuildMailLink);
-  form.addEventListener('blur', rebuildMailLink, true);
-
-  // Mobile Safari can keep an input focused until the tap.
-  // Updating on touch/pointer down makes sure the final typed value
-  // is already inside href BEFORE the browser follows the link.
-  submitBtn.addEventListener('pointerdown', rebuildMailLink);
-  submitBtn.addEventListener('touchstart', rebuildMailLink, { passive: true });
-  submitBtn.addEventListener('mousedown', rebuildMailLink);
-
-  submitBtn.addEventListener('click', function(e) {
-    if (!form.elements['speaker'].value) {
-      e.preventDefault();
-      form.elements['speaker'].classList.add('invalid');
-      speakerError.hidden = false;
-      form.elements['speaker'].focus();
-    }
+  // Rebuild the COMPLETE email continuously so the href is already ready
+  // before the browser processes the user's click/tap.
+  ['input', 'change', 'keyup'].forEach(function (eventName) {
+    form.addEventListener(eventName, refreshLinks);
   });
 
-  form.elements['speaker'].addEventListener('change', function() {
+  form.addEventListener('blur', refreshLinks, true);
+
+  // Mobile Safari may still have the final field focused at tap time.
+  ['pointerdown', 'touchstart', 'mousedown'].forEach(function (eventName) {
+    submitBtn.addEventListener(eventName, refreshLinks, { passive: true });
+  });
+
+  submitBtn.addEventListener('click', function (e) {
+    var speaker = form.elements['speaker'];
+
+    if (!speaker.value) {
+      e.preventDefault();
+      speaker.classList.add('invalid');
+      speakerError.hidden = false;
+      speaker.focus();
+      return false;
+    }
+
+    speaker.classList.remove('invalid');
+    speakerError.hidden = true;
+
+    // Build one last time. Do NOT prevent default.
+    // The browser follows the href already on this real <a> element.
+    refreshLinks();
+
+    // If the browser stays on this page, reveal a second route.
+    setTimeout(function () {
+      fallbackBtn.hidden = false;
+    }, 1400);
+  });
+
+  form.elements['speaker'].addEventListener('change', function () {
     if (this.value) {
       this.classList.remove('invalid');
       speakerError.hidden = true;
@@ -497,7 +579,8 @@
   });
 
   updatePrayerVisibility();
-  rebuildMailLink();
+  refreshLinks();
+})();
 </script>
 
 </body>

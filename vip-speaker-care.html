@@ -366,8 +366,6 @@
   <a class="btn btn-primary" id="submitBtn"
      href="mailto:vlad@davidhernandezministries.com?subject=Submitted%20Form"
      role="button">Submit</a>
-  <a class="fallback" id="browserBtn" href="#" target="_blank" rel="noopener noreferrer">Open in Browser</a>
-  <a class="fallback" id="fallbackBtn" href="#" hidden>Open email another way</a>
 </div>
 
 </div>
@@ -381,8 +379,6 @@
 
   var form = document.getElementById('careForm');
   var submitBtn = document.getElementById('submitBtn');
-  var browserBtn = document.getElementById('browserBtn');
-  var fallbackBtn = document.getElementById('fallbackBtn');
   var speakerError = document.getElementById('speakerError');
 
   function getAnswer(name) {
@@ -485,33 +481,18 @@
     var mailto = makeMailto(body);
     var gmail = makeGmail(body);
 
-    // Always provide a browser-based Gmail compose option with the same answers.
-    browserBtn.href = gmail;
-
-    // iPhone/iPad/Android: native mail composer.
+    // ONE BUTTON ONLY:
+    // Mobile/tablet -> native email app.
+    // Desktop browser -> Gmail web compose in the browser.
     if (isIOS() || isAndroid()) {
       submitBtn.href = mailto;
       submitBtn.removeAttribute('target');
-      fallbackBtn.href = gmail;
-      fallbackBtn.textContent = 'Open in Gmail instead';
-    }
-    // Mac Safari: use Gmail in SAME TAB so popup blockers cannot kill it.
-    else if (isDesktopMacSafari()) {
+      submitBtn.removeAttribute('rel');
+    } else {
       submitBtn.href = gmail;
       submitBtn.removeAttribute('target');
-      fallbackBtn.href = mailto;
-      fallbackBtn.textContent = 'Open default Mail app instead';
+      submitBtn.removeAttribute('rel');
     }
-    // Chrome/Edge/Firefox/other desktop: native mailto first.
-    else {
-      submitBtn.href = mailto;
-      submitBtn.removeAttribute('target');
-      fallbackBtn.href = gmail;
-      fallbackBtn.textContent = 'Open in Gmail instead';
-    }
-
-    // Keep a second route ready, but hidden unless needed manually.
-    fallbackBtn.hidden = true;
   }
 
   function updatePrayerVisibility() {
@@ -564,11 +545,6 @@
     // Build one last time. Do NOT prevent default.
     // The browser follows the href already on this real <a> element.
     refreshLinks();
-
-    // If the browser stays on this page, reveal a second route.
-    setTimeout(function () {
-      fallbackBtn.hidden = false;
-    }, 1400);
   });
 
   form.elements['speaker'].addEventListener('change', function () {

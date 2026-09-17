@@ -363,14 +363,14 @@
 </div>
 
 <div class="bar">
-  <a class="btn btn-primary" id="submitBtn" href="mailto:vlad@davidhernandezministries.com?subject=submited%20form" target="_top" role="button">Submit</a>
+  <button class="btn btn-primary" id="submitBtn" type="button">Submit</button>
 </div>
 
 </div>
 
 <script>
   const RECIPIENT = 'vlad@davidhernandezministries.com';
-  const SUBJECT = 'submited form';
+  const SUBJECT = 'Submitted Form';
 
   const form = document.getElementById('careForm');
   const submitBtn = document.getElementById('submitBtn');
@@ -383,26 +383,42 @@
       field.hidden = false;
     } else {
       field.hidden = true;
-      document.querySelectorAll('input[name="prayer"]').forEach(r => r.checked = false);
+      document.querySelectorAll('input[name="prayer"]').forEach(function(r) {
+        r.checked = false;
+      });
     }
-
-    updateMailto();
   }
 
-  document.querySelectorAll('input[name="beforeUp"]').forEach(r => {
+  document.querySelectorAll('input[name="beforeUp"]').forEach(function(r) {
     r.addEventListener('change', updatePrayerVisibility);
   });
 
   function getValue(name) {
-    const el = form.elements[name];
-    if (!el) return 'Not provided';
+    const checked = form.querySelector('[name="' + name + '"]:checked');
+    if (checked) return checked.value;
 
-    const value = String(el.value || '').trim();
+    const field = form.elements[name];
+    if (!field) return 'Not provided';
+
+    const value = String(field.value || '').trim();
     return value || 'Not provided';
   }
 
-  function makeBody() {
-    return [
+  submitBtn.addEventListener('click', function() {
+    const speaker = form.elements['speaker'];
+    const speakerError = document.getElementById('speakerError');
+
+    if (!speaker.value) {
+      speaker.classList.add('invalid');
+      speakerError.hidden = false;
+      speaker.focus();
+      return;
+    }
+
+    speaker.classList.remove('invalid');
+    speakerError.hidden = true;
+
+    const lines = [
       'Speaker: ' + getValue('speaker'),
       '',
       'Where until introduced: ' + getValue('beforeUp'),
@@ -419,41 +435,17 @@
       'Allergies / dietary: ' + getValue('allergies'),
       'Traveling with them: ' + getValue('guests'),
       'Additional notes: ' + getValue('other')
-    ].join('
-');
-  }
+    ];
 
-  function updateMailto() {
+    const body = lines.join('
+');
+
     const mailto =
       'mailto:' + RECIPIENT +
       '?subject=' + encodeURIComponent(SUBJECT) +
-      '&body=' + encodeURIComponent(makeBody());
+      '&body=' + encodeURIComponent(body);
 
-    // The button itself is always a real native mailto link.
-    submitBtn.href = mailto;
-  }
-
-  form.addEventListener('input', updateMailto);
-  form.addEventListener('change', updateMailto);
-
-  submitBtn.addEventListener('click', function(e) {
-    const speaker = form.elements['speaker'];
-    const speakerError = document.getElementById('speakerError');
-
-    if (!speaker.value) {
-      e.preventDefault();
-      speaker.classList.add('invalid');
-      speakerError.hidden = false;
-      speaker.focus();
-      return;
-    }
-
-    speaker.classList.remove('invalid');
-    speakerError.hidden = true;
-    updateMailto();
-
-    // IMPORTANT: no preventDefault here.
-    // The browser follows the real <a href="mailto:..."> using target="_top".
+    window.location.href = mailto;
   });
 
   form.elements['speaker'].addEventListener('change', function() {
@@ -462,8 +454,6 @@
       document.getElementById('speakerError').hidden = true;
     }
   });
-
-  updateMailto();
 </script>
 
 </body>

@@ -362,9 +362,8 @@
   <p class="foot">Your details go directly to our hosting team &mdash; nothing is shared beyond planning your visit.</p>
 </div>
 
-<div class="bar" style="flex-direction:column;gap:8px;">
-  <a class="btn btn-primary" id="submitBtn" href="#" role="button">Submit</a>
-  <a class="fallback" id="gmailFallback" href="#" target="_blank" rel="noopener" hidden>No mail app opened &mdash; tap here to open it in Gmail</a>
+<div class="bar">
+  <button class="btn btn-primary" id="submitBtn" type="button">Submit</button>
 </div>
 
 </div>
@@ -377,81 +376,103 @@
   function updatePrayerVisibility(){
     var checked = document.querySelector('input[name="beforeUp"]:checked');
     var field = document.getElementById('prayerField');
+
     if(checked && checked.value === "Green room until it's time"){
       field.hidden = false;
     } else {
       field.hidden = true;
-      document.querySelectorAll('input[name="prayer"]').forEach(function(r){ r.checked = false; });
+      document.querySelectorAll('input[name="prayer"]').forEach(function(r){
+        r.checked = false;
+      });
     }
   }
+
   document.querySelectorAll('input[name="beforeUp"]').forEach(function(r){
     r.addEventListener('change', updatePrayerVisibility);
   });
 
-  // Every field's value, or "Not provided" when left blank.
-  function val(n){
-    var v = ((form.elements[n] && form.elements[n].value) || '').trim();
-    return v || 'Not provided';
+  function val(name){
+    var field = form.elements[name];
+
+    if(!field) return 'Not provided';
+
+    var value = '';
+
+    if(field instanceof RadioNodeList){
+      value = field.value || '';
+    } else {
+      value = field.value || '';
+    }
+
+    value = String(value).trim();
+    return value || 'Not provided';
   }
 
   function handleSubmit(){
-    var subject = encodeURIComponent(
-      "Guest Speaker Preferences - " + val('speaker')
-    );
+    var speakerSelect = form.elements['speaker'];
+    var speakerError = document.getElementById('speakerError');
 
-    var body = encodeURIComponent(
-      "Speaker: " + val('speaker') + "\n" +
-      "\n" +
-      "Where until introduced: " + val('beforeUp') + "\n" +
-      "Prayer before going up: " + val('prayer') + "\n" +
-      "Mic handoff: " + val('mic') + "\n" +
-      "On the pulpit: " + val('pulpitItems') + "\n" +
-      "Printed sermon outline: " + val('printedOutline') + "\n" +
-      "Worship team stays on stage: " + val('worshipStay') + "\n" +
-      "Piano player stays on stage: " + val('pianoStay') + "\n" +
-      "When worship returns: " + val('worshipReturn') + "\n" +
-      "Ministry / altar notes: " + val('ministryTime') + "\n" +
-      "Green room on arrival: " + val('greenroom') + "\n" +
-      "Starbucks order: " + val('starbucks') + "\n" +
-      "Allergies / dietary: " + val('allergies') + "\n" +
-      "Traveling with them: " + val('guests') + "\n" +
-      "Additional notes: " + val('other')
-    );
+    if(!speakerSelect.value){
+      speakerSelect.classList.add('invalid');
+      speakerError.hidden = false;
+      speakerSelect.focus();
+      return;
+    }
 
-    var mailto = 'mailto:' + RECIPIENT + '?subject=' + subject + '&body=' + body;
-    var gmail = 'https://mail.google.com/mail/?view=cm&fs=1&to='
-      + encodeURIComponent(RECIPIENT) + '&su=' + subject + '&body=' + body;
+    speakerSelect.classList.remove('invalid');
+    speakerError.hidden = true;
 
-    // The mail app is the first and preferred route.
+    var subject = 'submited form';
+
+    var body =
+      "Speaker: " + val('speaker') + "
+
+" +
+      "Where until introduced: " + val('beforeUp') + "
+" +
+      "Prayer before going up: " + val('prayer') + "
+" +
+      "Mic handoff: " + val('mic') + "
+" +
+      "On the pulpit: " + val('pulpitItems') + "
+" +
+      "Printed sermon outline: " + val('printedOutline') + "
+" +
+      "Worship team stays on stage: " + val('worshipStay') + "
+" +
+      "Piano player stays on stage: " + val('pianoStay') + "
+" +
+      "When worship returns: " + val('worshipReturn') + "
+" +
+      "Ministry / altar notes: " + val('ministryTime') + "
+" +
+      "Green room on arrival: " + val('greenroom') + "
+" +
+      "Starbucks order: " + val('starbucks') + "
+" +
+      "Allergies / dietary: " + val('allergies') + "
+" +
+      "Traveling with them: " + val('guests') + "
+" +
+      "Additional notes: " + val('other');
+
+    var mailto =
+      'mailto:' + encodeURIComponent(RECIPIENT) +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
+
+    // This must happen directly inside the user's click event.
+    // It opens the default email handler on macOS, iOS, Android, Windows, etc.
     window.location.href = mailto;
-
-    // A machine with no default mail client answers a mailto: with silence --
-    // no error, no window, nothing. When that happens this page stays in the
-    // foreground, so if it is still here a moment later, nothing took the
-    // link: open Gmail's composer instead, and if the browser blocks that,
-    // surface a link the user can tap themselves. The button never does
-    // nothing.
-    var handedOff = false;
-    function markHandoff(){ handedOff = true; }
-    document.addEventListener('visibilitychange', function(){
-      if(document.hidden) markHandoff();
-    });
-    window.addEventListener('blur', markHandoff);
-    window.addEventListener('pagehide', markHandoff);
-
-    setTimeout(function(){
-      if(handedOff) return;
-      var fallback = document.getElementById('gmailFallback');
-      fallback.href = gmail;
-      var opened = null;
-      try{ opened = window.open(gmail, '_blank'); }catch(err){}
-      if(!opened) fallback.hidden = false;
-    }, 1200);
   }
 
-  submitBtn.addEventListener('click', function(e){
-    e.preventDefault();
-    handleSubmit();
+  submitBtn.addEventListener('click', handleSubmit);
+
+  form.elements['speaker'].addEventListener('change', function(){
+    if(this.value){
+      this.classList.remove('invalid');
+      document.getElementById('speakerError').hidden = true;
+    }
   });
 </script>
 

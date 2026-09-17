@@ -363,7 +363,7 @@
 </div>
 
 <div class="bar">
-  <button class="btn btn-primary" id="submitBtn" type="button">Submit</button>
+  <a class="btn btn-primary" id="submitBtn" href="mailto:vlad@davidhernandezministries.com?subject=submited%20form" role="button">Submit</a>
 </div>
 
 </div>
@@ -385,6 +385,8 @@
         r.checked = false;
       });
     }
+
+    updateMailLink();
   }
 
   document.querySelectorAll('input[name="beforeUp"]').forEach(function(r){
@@ -393,38 +395,15 @@
 
   function val(name){
     var field = form.elements[name];
-
     if(!field) return 'Not provided';
 
-    var value = '';
-
-    if(field instanceof RadioNodeList){
-      value = field.value || '';
-    } else {
-      value = field.value || '';
-    }
-
+    var value = field.value || '';
     value = String(value).trim();
     return value || 'Not provided';
   }
 
-  function handleSubmit(){
-    var speakerSelect = form.elements['speaker'];
-    var speakerError = document.getElementById('speakerError');
-
-    if(!speakerSelect.value){
-      speakerSelect.classList.add('invalid');
-      speakerError.hidden = false;
-      speakerSelect.focus();
-      return;
-    }
-
-    speakerSelect.classList.remove('invalid');
-    speakerError.hidden = true;
-
-    var subject = 'submited form';
-
-    var body =
+  function buildBody(){
+    return (
       "Speaker: " + val('speaker') + "
 
 " +
@@ -454,19 +433,43 @@
 " +
       "Traveling with them: " + val('guests') + "
 " +
-      "Additional notes: " + val('other');
-
-    var mailto =
-      'mailto:' + encodeURIComponent(RECIPIENT) +
-      '?subject=' + encodeURIComponent(subject) +
-      '&body=' + encodeURIComponent(body);
-
-    // This must happen directly inside the user's click event.
-    // It opens the default email handler on macOS, iOS, Android, Windows, etc.
-    window.location.href = mailto;
+      "Additional notes: " + val('other')
+    );
   }
 
-  submitBtn.addEventListener('click', handleSubmit);
+  function updateMailLink(){
+    var subject = 'submited form';
+    var href =
+      'mailto:' + RECIPIENT +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(buildBody());
+
+    submitBtn.setAttribute('href', href);
+  }
+
+  // Keep the real mailto link updated as the user fills out the form.
+  form.addEventListener('input', updateMailLink);
+  form.addEventListener('change', updateMailLink);
+
+  // Only stop the link if the required speaker is missing.
+  submitBtn.addEventListener('click', function(e){
+    var speaker = form.elements['speaker'];
+    var speakerError = document.getElementById('speakerError');
+
+    if(!speaker.value){
+      e.preventDefault();
+      speaker.classList.add('invalid');
+      speakerError.hidden = false;
+      speaker.focus();
+      return;
+    }
+
+    speaker.classList.remove('invalid');
+    speakerError.hidden = true;
+
+    // Refresh immediately before the browser follows the native mailto link.
+    updateMailLink();
+  });
 
   form.elements['speaker'].addEventListener('change', function(){
     if(this.value){
@@ -474,6 +477,8 @@
       document.getElementById('speakerError').hidden = true;
     }
   });
+
+  updateMailLink();
 </script>
 
 </body>

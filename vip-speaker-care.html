@@ -363,7 +363,9 @@
 </div>
 
 <div class="bar">
-  <a class="btn btn-primary" id="submitBtn" href="mailto:vlad@davidhernandezministries.com?subject=Submitted%20Form" role="button">Submit</a>
+  <a class="btn btn-primary" id="submitBtn"
+     href="mailto:vlad@davidhernandezministries.com?subject=Submitted%20Form"
+     role="button">Submit</a>
 </div>
 
 </div>
@@ -374,29 +376,27 @@
 
   const form = document.getElementById('careForm');
   const submitBtn = document.getElementById('submitBtn');
+  const speakerError = document.getElementById('speakerError');
 
   function updatePrayerVisibility() {
-    const checked = document.querySelector('input[name="beforeUp"]:checked');
+    const checked = form.querySelector('input[name="beforeUp"]:checked');
     const field = document.getElementById('prayerField');
 
     if (checked && checked.value === "Green room until it's time") {
       field.hidden = false;
     } else {
       field.hidden = true;
-      document.querySelectorAll('input[name="prayer"]').forEach(function(r) {
+      form.querySelectorAll('input[name="prayer"]').forEach(function(r) {
         r.checked = false;
       });
     }
 
-    buildEmailLink();
+    refreshSubmitLink();
   }
 
-  function getValue(name) {
-    const radios = form.querySelectorAll('input[type="radio"][name="' + name + '"]');
-    if (radios.length) {
-      const checked = form.querySelector('input[type="radio"][name="' + name + '"]:checked');
-      return checked ? checked.value : 'Not provided';
-    }
+  function answerFor(name) {
+    const radio = form.querySelector('input[type="radio"][name="' + name + '"]:checked');
+    if (radio) return radio.value;
 
     const field = form.elements[name];
     if (!field) return 'Not provided';
@@ -405,46 +405,133 @@
     return value || 'Not provided';
   }
 
-  function buildEmailLink() {
-    const body = [
-      'Speaker: ' + getValue('speaker'),
+  function buildEmailBody() {
+    return [
+      'HOLY SPIRIT CONFERENCE 26 - GUEST SPEAKER FORM',
       '',
-      'Where until introduced: ' + getValue('beforeUp'),
-      'Prayer before going up: ' + getValue('prayer'),
-      'Mic handoff: ' + getValue('mic'),
-      'On the pulpit: ' + getValue('pulpitItems'),
-      'Printed sermon outline: ' + getValue('printedOutline'),
-      'Worship team stays on stage: ' + getValue('worshipStay'),
-      'Piano player stays on stage: ' + getValue('pianoStay'),
-      'When worship returns: ' + getValue('worshipReturn'),
-      'Ministry / altar notes: ' + getValue('ministryTime'),
-      'Green room on arrival: ' + getValue('greenroom'),
-      'Starbucks order: ' + getValue('starbucks'),
-      'Allergies / dietary: ' + getValue('allergies'),
-      'Traveling with them: ' + getValue('guests'),
-      'Additional notes: ' + getValue('other')
-    ].join('
-');
+      'Which speaker is this for?',
+      answerFor('speaker'),
+      '',
+      "Before you're introduced on stage, where would you like to be?",
+      answerFor('beforeUp'),
+      '',
+      'Would you like a moment of prayer before you go up?',
+      answerFor('prayer'),
+      '',
+      'How would you like the mic as you come up on stage?',
+      answerFor('mic'),
+      '',
+      'What would you like on the pulpit?',
+      answerFor('pulpitItems'),
+      '',
+      "If you're not using an electronic device, would you like a sermon outline printed?",
+      answerFor('printedOutline'),
+      '',
+      "Would you like the worship team to remain on stage while you're preaching?",
+      answerFor('worshipStay'),
+      '',
+      "Would you like the piano player to remain on stage while you're preaching?",
+      answerFor('pianoStay'),
+      '',
+      'When would you like the worship team to come back up?',
+      answerFor('worshipReturn'),
+      '',
+      'Anything else specific for ministry or altar call time?',
+      answerFor('ministryTime'),
+      '',
+      "Anything you'd like waiting in the green room upon your arrival",
+      answerFor('greenroom'),
+      '',
+      'Starbucks order (drink + snack)',
+      answerFor('starbucks'),
+      '',
+      'Allergies or dietary restrictions',
+      answerFor('allergies'),
+      '',
+      'Please list anyone traveling with you (names + how many seats are needed)',
+      answerFor('guests'),
+      '',
+      'Anything at all that would help us take great care of you',
+      answerFor('other')
+    ].join('\r\n');
+  }
 
-    submitBtn.href =
-      'mailto:' + RECIPIENT +
+  function isIOSLike() {
+    const ua = navigator.userAgent || '';
+    return /iPhone|iPad|iPod/i.test(ua) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  function isMacSafariDesktop() {
+    const ua = navigator.userAgent || '';
+    const isMac = /Macintosh/i.test(ua);
+    const isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|Chromium|Edg|OPR|Firefox/i.test(ua);
+    return isMac && isSafari && !isIOSLike();
+  }
+
+  function makeMailto(body) {
+    return 'mailto:' + RECIPIENT +
       '?subject=' + encodeURIComponent(SUBJECT) +
       '&body=' + encodeURIComponent(body);
   }
 
-  document.querySelectorAll('input[name="beforeUp"]').forEach(function(r) {
+  function makeGmail(body) {
+    return 'https://mail.google.com/mail/?view=cm&fs=1' +
+      '&to=' + encodeURIComponent(RECIPIENT) +
+      '&su=' + encodeURIComponent(SUBJECT) +
+      '&body=' + encodeURIComponent(body);
+  }
+
+  function refreshSubmitLink() {
+    const body = buildEmailBody();
+
+    if (isMacSafariDesktop()) {
+      submitBtn.href = makeGmail(body);
+      submitBtn.target = '_blank';
+      submitBtn.rel = 'noopener noreferrer';
+    } else {
+      submitBtn.href = makeMailto(body);
+      submitBtn.removeAttribute('target');
+      submitBtn.removeAttribute('rel');
+    }
+  }
+
+  form.querySelectorAll('input[name="beforeUp"]').forEach(function(r) {
     r.addEventListener('change', updatePrayerVisibility);
   });
 
-  // Keep the mailto URL fully built BEFORE the user taps Submit.
-  form.addEventListener('input', buildEmailLink);
-  form.addEventListener('change', buildEmailLink);
+  ['input', 'change', 'keyup'].forEach(function(eventName) {
+    form.addEventListener(eventName, refreshSubmitLink);
+  });
 
-  // Extra mobile events so Safari/iOS always has the latest values before the tap.
-  form.addEventListener('keyup', buildEmailLink);
-  form.addEventListener('blur', buildEmailLink, true);
+  form.addEventListener('blur', refreshSubmitLink, true);
 
-  buildEmailLink();
+  submitBtn.addEventListener('click', function(e) {
+    const speaker = form.elements['speaker'];
+
+    if (!speaker.value) {
+      e.preventDefault();
+      speaker.classList.add('invalid');
+      speakerError.hidden = false;
+      speaker.focus();
+      return;
+    }
+
+    speaker.classList.remove('invalid');
+    speakerError.hidden = true;
+
+    refreshSubmitLink();
+  });
+
+  form.elements['speaker'].addEventListener('change', function() {
+    if (this.value) {
+      this.classList.remove('invalid');
+      speakerError.hidden = true;
+    }
+  });
+
+  updatePrayerVisibility();
+  refreshSubmitLink();
 </script>
 
 </body>

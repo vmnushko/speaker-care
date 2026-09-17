@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Holy Spirit Conference &mdash; Guest Speakers</title>
+  <meta name="description" content="Guest speaker care details for Holy Spirit Conference '26." />
+  <meta name="theme-color" content="#0B1220" />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" />
+<style>
+  :root{
+    --ink:#1B2030;
+    --paper:#FAF8F3;
+    --surface:#FFFFFF;
+    --surface-2:#F3EFE3;
+    --muted:#65625A;
+    --muted2:#96907F;
+    --gold:#C9932E;
+    --gold-soft:#F1DFB8;
+    --border:#E7E1D0;
+    --line:#DCD3BA;
+    --navy:#0B1220;
+    --navy-2:#16233B;
+    --glow:#3FA9F5;
+    --danger:#C0392B;
+    --shadow: 0 1px 2px rgba(20,16,8,0.05), 0 10px 28px rgba(20,16,8,0.07);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#111015;
+      --surface:#1A1913;
+      --surface-2:#211F17;
+      --ink:#F2EEE3;
+      --muted:#B9B39F;
+      --muted2:#8C8672;
+      --gold:#E3AC4E;
+      --gold-soft:#3A2C13;
+      --border:#332E22;
+      --line:#3D3728;
+      --danger:#FF6B5B;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#111015;
+    --surface:#1A1913;
+    --surface-2:#211F17;
+    --ink:#F2EEE3;
+    --muted:#B9B39F;
+    --muted2:#8C8672;
+    --gold:#E3AC4E;
+    --gold-soft:#3A2C13;
+    --border:#332E22;
+    --line:#3D3728;
+    --danger:#FF6B5B;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding:0 0 120px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Brand hero band — fixed deep navy + gold, matches the conference key art */
+  .hero{
+    background:
+      radial-gradient(55% 65% at 50% 8%, rgba(63,169,245,0.4), transparent 65%),
+      radial-gradient(130% 180% at 50% -20%, var(--navy-2), var(--navy) 62%);
+    color:#FFFFFF;
+    padding:40px 20px 48px;
+    text-align:center;
+  }
+  .hero-inner{max-width:640px;margin:0 auto;}
+  .eyebrow{
+    font-family:'Playfair Display', Georgia, serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:16px;
+    letter-spacing:0.02em;
+    color:var(--gold);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Playfair Display', Georgia, serif;
+    font-weight:700;
+    font-size:clamp(28px,6.5vw,40px);
+    line-height:1.16;
+    letter-spacing:-0.005em;
+    margin:0 0 14px;
+    text-wrap:balance;
+    color:#FFFFFF;
+  }
+  h1 .gold{color:var(--gold);}
+  .sub{
+    color:#C7C2B2;
+    font-size:15.5px;
+    max-width:54ch;
+    margin:0 auto;
+  }
+
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px;}
+
+  .section-title{
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--gold);
+    margin:36px 0 14px;
+  }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:24px;
+    margin-bottom:22px;
+  }
+  .card-kicker{
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--gold);
+    margin:0 0 16px;
+  }
+
+  .field{margin-bottom:18px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:13.5px;
+    font-weight:700;
+    margin-bottom:7px;
+  }
+  .hint{font-weight:500;color:var(--muted);font-size:12.5px;}
+  .field-error{font-weight:600;color:var(--danger);font-size:12.5px;margin:8px 0 0;}
+  select.invalid{outline:2px solid var(--danger);outline-offset:1px;}
+  input[type=text], textarea, select{
+    width:100%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--ink);
+  }
+  input[type=text]:focus, textarea:focus, select:focus{
+    outline:2px solid var(--gold);
+    outline-offset:1px;
+  }
+  textarea{resize:vertical;min-height:70px;}
+
+  .choice-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .choice{
+    position:relative;
+    border:1.5px solid var(--border);
+    background:var(--surface-2);
+    border-radius:999px;
+    padding:10px 18px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    user-select:none;
+    transition:border-color .15s, background .15s, color .15s;
+  }
+  .choice input{position:absolute;opacity:0;pointer-events:none;}
+  .choice:has(input:checked){
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper);
+  }
+  .choice:has(input:focus-visible){outline:2px solid var(--gold);outline-offset:2px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:480px){.grid2{grid-template-columns:1fr;}}
+
+  .bar{
+    position:fixed;
+    left:0;right:0;bottom:0;
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    box-shadow:0 -6px 20px rgba(0,0,0,0.08);
+  }
+  .btn{
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    border-radius:999px;
+    padding:13px 24px;
+    border:1.5px solid transparent;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .btn-primary{background:var(--gold);color:var(--navy);}
+  .btn-primary:hover{filter:brightness(1.08);}
+
+  .fallback{
+    font-size:13px;
+    font-weight:700;
+    color:var(--gold);
+    text-decoration:underline;
+    text-align:center;
+  }
+
+  .foot{
+    text-align:center;
+    color:var(--muted2);
+    font-size:12.5px;
+    margin:30px 0 0;
+  }
+</style>
+</head>
+<body>
+
+<div id="formView">
+
+<div class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">September 17&ndash;19, 2026</p>
+    <h1>Thank You for Being Part of <span class="gold">Holy Spirit Conference &rsquo;26</span></h1>
+    <p class="sub">We want your time with us to feel completely taken care of. A couple minutes on this, and we'll have everything we need &mdash; then we'll send back your full schedule for the weekend.</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <form id="careForm">
+
+    <div class="card">
+      <p class="card-kicker">Who Is This For</p>
+      <div class="field">
+        <label>Which speaker is this for?</label>
+        <select name="speaker" required>
+          <option value="">Select a name&hellip;</option>
+          <option>Pastor Vlad Savchuk</option>
+          <option>Pastor Bobby Schuller</option>
+          <option>Pastor Landon Schott</option>
+          <option>Pastor Daniel Kolenda</option>
+          <option>Pastor David Hernandez</option>
+        </select>
+        <p class="field-error" id="speakerError" hidden>Please select a name before submitting.</p>
+      </div>
+    </div>
+
+    <div class="section-title">Before You Go Up</div>
+    <div class="card">
+      <div class="field">
+        <label>Before you're introduced on stage, where would you like to be?</label>
+        <div class="choice-group" data-group="beforeUp">
+          <label class="choice"><input type="radio" name="beforeUp" value="Green room until it's time"><span>Green room until it's time</span></label>
+          <label class="choice"><input type="radio" name="beforeUp" value="Seated up front for worship"><span>Seated up front for worship</span></label>
+        </div>
+      </div>
+      <div class="field" id="prayerField" hidden>
+        <label>Would you like a moment of prayer before you go up?</label>
+        <div class="choice-group" data-group="prayer">
+          <label class="choice"><input type="radio" name="prayer" value="Yes, please"><span>Yes, please</span></label>
+          <label class="choice"><input type="radio" name="prayer" value="No thank you, just a moment to myself"><span>No thank you, a moment to myself</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">On Stage</div>
+    <div class="card">
+      <div class="field">
+        <label>How would you like the mic as you come up on stage?</label>
+        <div class="choice-group" data-group="mic">
+          <label class="choice"><input type="radio" name="mic" value="Handed off by the pastor introducing me"><span>Handed off by the pastor introducing me</span></label>
+          <label class="choice"><input type="radio" name="mic" value="Handed off by my assigned assistant before I go on stage"><span>Handed off by my assigned assistant</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label>What would you like on the pulpit?</label>
+        <input type="text" name="pulpitItems" placeholder="e.g. water, sparkling water, napkins">
+      </div>
+      <div class="field">
+        <label>If you're not using an electronic device, would you like a sermon outline printed?</label>
+        <div class="choice-group" data-group="printedOutline">
+          <label class="choice"><input type="radio" name="printedOutline" value="Yes"><span>Yes</span></label>
+          <label class="choice"><input type="radio" name="printedOutline" value="No"><span>No</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Message &amp; Ministry Time</div>
+    <div class="card">
+      <div class="field">
+        <label>Would you like the worship team to remain on stage while you're preaching?</label>
+        <div class="choice-group" data-group="worshipStay">
+          <label class="choice"><input type="radio" name="worshipStay" value="Yes"><span>Yes</span></label>
+          <label class="choice"><input type="radio" name="worshipStay" value="No"><span>No</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Would you like the piano player to remain on stage while you're preaching?</label>
+        <div class="choice-group" data-group="pianoStay">
+          <label class="choice"><input type="radio" name="pianoStay" value="Yes"><span>Yes</span></label>
+          <label class="choice"><input type="radio" name="pianoStay" value="No"><span>No</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label>When would you like the worship team to come back up?</label>
+        <input type="text" name="worshipReturn" placeholder="e.g. right after the message, during altar ministry">
+      </div>
+      <div class="field">
+        <label>Anything else specific for ministry or altar call time?</label>
+        <input type="text" name="ministryTime" placeholder="e.g. keep worship playing softly underneath">
+      </div>
+    </div>
+
+    <div class="section-title">Comfort &amp; Favorites</div>
+    <div class="card">
+      <div class="field">
+        <label>Anything you'd like waiting in the green room upon your arrival</label>
+        <input type="text" name="greenroom" placeholder="e.g. sparkling water, snacks, throat lozenges, mints">
+      </div>
+      <div class="field">
+        <label>Starbucks order <span class="hint">(drink + snack)</span></label>
+        <input type="text" name="starbucks" placeholder="e.g. Grande oat milk latte, everything bagel">
+      </div>
+      <div class="field">
+        <label>Allergies or dietary restrictions</label>
+        <input type="text" name="allergies" placeholder="e.g. none, or gluten-free">
+      </div>
+    </div>
+
+    <div class="section-title">Who's Traveling With You</div>
+    <div class="card">
+      <div class="field">
+        <label>Please list anyone traveling with you <span class="hint">(names + how many seats are needed)</span></label>
+        <input type="text" name="guests" placeholder="e.g. Spouse Sarah, assistant John — 2 seats needed">
+      </div>
+    </div>
+
+    <div class="section-title">Anything Else</div>
+    <div class="card">
+      <div class="field">
+        <label>Anything at all that would help us take great care of you</label>
+        <textarea name="other" placeholder="Nothing is too small to mention..."></textarea>
+      </div>
+    </div>
+
+  </form>
+
+  <p class="foot">Your details go directly to our hosting team &mdash; nothing is shared beyond planning your visit.</p>
+</div>
+
+<div class="bar" style="flex-direction:column;gap:8px;">
+  <a class="btn btn-primary" id="submitBtn" href="#" role="button">Submit</a>
+  <a class="fallback" id="gmailFallback" href="#" target="_blank" rel="noopener" hidden>No mail app opened &mdash; tap here to open it in Gmail</a>
+</div>
+
+</div>
+
+<script>
+  var RECIPIENT = 'vlad@davidhernandezministries.com';
+  var form = document.getElementById('careForm');
+  var submitBtn = document.getElementById('submitBtn');
+
+  function updatePrayerVisibility(){
+    var checked = document.querySelector('input[name="beforeUp"]:checked');
+    var field = document.getElementById('prayerField');
+    if(checked && checked.value === "Green room until it's time"){
+      field.hidden = false;
+    } else {
+      field.hidden = true;
+      document.querySelectorAll('input[name="prayer"]').forEach(function(r){ r.checked = false; });
+    }
+  }
+  document.querySelectorAll('input[name="beforeUp"]').forEach(function(r){
+    r.addEventListener('change', updatePrayerVisibility);
+  });
+
+  // Every field's value, or "Not provided" when left blank.
+  function val(n){
+    var v = ((form.elements[n] && form.elements[n].value) || '').trim();
+    return v || 'Not provided';
+  }
+
+  function handleSubmit(){
+    var subject = encodeURIComponent(
+      "Guest Speaker Preferences - " + val('speaker')
+    );
+
+    var body = encodeURIComponent(
+      "Speaker: " + val('speaker') + "\n" +
+      "\n" +
+      "Where until introduced: " + val('beforeUp') + "\n" +
+      "Prayer before going up: " + val('prayer') + "\n" +
+      "Mic handoff: " + val('mic') + "\n" +
+      "On the pulpit: " + val('pulpitItems') + "\n" +
+      "Printed sermon outline: " + val('printedOutline') + "\n" +
+      "Worship team stays on stage: " + val('worshipStay') + "\n" +
+      "Piano player stays on stage: " + val('pianoStay') + "\n" +
+      "When worship returns: " + val('worshipReturn') + "\n" +
+      "Ministry / altar notes: " + val('ministryTime') + "\n" +
+      "Green room on arrival: " + val('greenroom') + "\n" +
+      "Starbucks order: " + val('starbucks') + "\n" +
+      "Allergies / dietary: " + val('allergies') + "\n" +
+      "Traveling with them: " + val('guests') + "\n" +
+      "Additional notes: " + val('other')
+    );
+
+    var mailto = 'mailto:' + RECIPIENT + '?subject=' + subject + '&body=' + body;
+    var gmail = 'https://mail.google.com/mail/?view=cm&fs=1&to='
+      + encodeURIComponent(RECIPIENT) + '&su=' + subject + '&body=' + body;
+
+    // The mail app is the first and preferred route.
+    window.location.href = mailto;
+
+    // A machine with no default mail client answers a mailto: with silence --
+    // no error, no window, nothing. When that happens this page stays in the
+    // foreground, so if it is still here a moment later, nothing took the
+    // link: open Gmail's composer instead, and if the browser blocks that,
+    // surface a link the user can tap themselves. The button never does
+    // nothing.
+    var handedOff = false;
+    function markHandoff(){ handedOff = true; }
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) markHandoff();
+    });
+    window.addEventListener('blur', markHandoff);
+    window.addEventListener('pagehide', markHandoff);
+
+    setTimeout(function(){
+      if(handedOff) return;
+      var fallback = document.getElementById('gmailFallback');
+      fallback.href = gmail;
+      var opened = null;
+      try{ opened = window.open(gmail, '_blank'); }catch(err){}
+      if(!opened) fallback.hidden = false;
+    }, 1200);
+  }
+
+  submitBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    handleSubmit();
+  });
+</script>
+
+</body>
+</html>

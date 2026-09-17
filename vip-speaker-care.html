@@ -405,8 +405,8 @@
     return value || 'Not provided';
   }
 
-  function buildEmailLink() {
-    const body = [
+  function buildBody() {
+    return [
       'Speaker: ' + getValue('speaker'),
       '',
       'Where until introduced: ' + getValue('beforeUp'),
@@ -425,22 +425,49 @@
       'Additional notes: ' + getValue('other')
     ].join('
 ');
+  }
 
-    submitBtn.href =
+  function isMacSafari() {
+    const ua = navigator.userAgent;
+    const isMac = /Macintosh/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|Chromium|Edg|OPR/.test(ua);
+    const isIOS = /iPhone|iPad|iPod/.test(ua);
+    return isMac && isSafari && !isIOS;
+  }
+
+  function buildEmailLink() {
+    const body = buildBody();
+
+    const mailto =
       'mailto:' + RECIPIENT +
       '?subject=' + encodeURIComponent(SUBJECT) +
       '&body=' + encodeURIComponent(body);
+
+    const gmail =
+      'https://mail.google.com/mail/?view=cm&fs=1' +
+      '&to=' + encodeURIComponent(RECIPIENT) +
+      '&su=' + encodeURIComponent(SUBJECT) +
+      '&body=' + encodeURIComponent(body);
+
+    // Mac Safari gets Gmail in the browser.
+    // Phones/tablets and other browsers use the device's normal email handler.
+    if (isMacSafari()) {
+      submitBtn.href = gmail;
+      submitBtn.target = '_blank';
+      submitBtn.rel = 'noopener';
+    } else {
+      submitBtn.href = mailto;
+      submitBtn.removeAttribute('target');
+      submitBtn.removeAttribute('rel');
+    }
   }
 
   document.querySelectorAll('input[name="beforeUp"]').forEach(function(r) {
     r.addEventListener('change', updatePrayerVisibility);
   });
 
-  // Keep the mailto URL fully built BEFORE the user taps Submit.
   form.addEventListener('input', buildEmailLink);
   form.addEventListener('change', buildEmailLink);
-
-  // Extra mobile events so Safari/iOS always has the latest values before the tap.
   form.addEventListener('keyup', buildEmailLink);
   form.addEventListener('blur', buildEmailLink, true);
 
